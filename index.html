@@ -1,0 +1,411 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>学生管理系统</title>
+	<link rel="stylesheet" href="css/animate.min.css" />
+	<style type="text/css">
+		.title{
+			text-align: center;
+			font-size: 24px;
+			font-family: '微软雅黑';
+		}
+		.box{
+			width: 800px;
+			margin: 0px auto;
+		}
+		table,tr,th,td{
+			border-collapse: collapse;
+		}
+		.studentTable{
+			width: 100%;
+			font-size: 14px;
+			font-family: '微软雅黑';
+		}
+		th,td{
+			width: 114px;
+			height: 30px;
+			padding: 2px 10px;
+			line-height: 30px;
+			text-align: left;
+			position: relative;
+		}
+		tr:nth-child(2n){
+			background-color: #eee;
+		}
+		tr:first-child{
+			background-color: #E91E63;
+			color: white;
+			line-height: 28px;
+		}
+		tr:nth-child(n+2):hover{
+			background-color: #FFEB3B;
+			cursor: pointer;
+		}
+
+		td img{
+			position: absolute;
+			right: 4px;
+			top: 10px;
+		}
+		input{
+			width: 90px;
+			outline-style: none;
+			outline: none;
+			padding-left: 6px;
+		}
+		a{
+			width: 60px;
+			height: 22px;
+			display: block;
+			text-decoration: none;
+			color: #333;
+			border-radius: 4px;
+			line-height: 22px;
+			text-align: center;
+		}
+		a:hover{
+			color: white;
+			background-color: green;
+		}
+		#add{
+			outline-style: none;
+			outline: none;
+			width: 88px;
+			height: 30px;
+			text-align: center;
+			line-height: 30px;
+			border: 1px solid #FFEB3B;
+			border-radius: 6px;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<h1 class="title">学生信息管理系统</h1>
+	<div class="box">
+		<input type="button" value="添加" id="add"/>
+		<table class="studentTable" id="studentTable">
+			<tr>
+				<th>id</th>
+				<th>姓名</th>
+				<th>性别</th>
+				<th>年龄</th>
+				<th>qq号</th>
+				<th>修改操作</th>
+				<th>删除操作</th>
+			</tr>
+			
+		</table>
+	</div>
+	<script type="text/javascript" src="js/jquery-1.12.3.min.js"></script>
+	<script type="text/javascript">
+		function Student(JSON){
+			this.$tr=null;
+			this.$id_td=null;
+			this.$id_span=null;
+
+			this.$xingming_td=null;
+			this.$xingming_span=null;
+			this.$xingming_input=null;
+
+			this.$nianling_td=null;
+			this.$nianling_span=null;
+			this.$nianling_input=null;
+
+			this.$xingbie_td=null;
+			this.$xingbie_span=null;
+			this.$xingbie_input=null;
+
+			this.$qqhao_td=null;
+			this.$qqhao_span=null;
+			this.$qqhao_input=null;
+
+			this.$edit_td=null;
+			this.$edit_a=null;
+			this.$edit_aok=null;
+			this.$delet_td=null;
+			this.$delet_a=null;
+
+			this._id=JSON["id"];
+			this.xingming=JSON["xingming"];
+			this.nianling=JSON["nianling"];
+			this.xingbie=JSON["xingbie"];
+			this.qqhao=JSON["qqhao"];
+
+			this.init();
+			this.bindEvent();
+		}
+		Student.prototype.init=function(){
+			this.$tr=$("<tr></tr>");//tr可以不在这里上树   可以到新创建的管理者中去上树
+			this.$id_td=$("<td>"+this._id+"</td>").appendTo(this.$tr);
+			this.$xingming_td=$("<td></td>").appendTo(this.$tr);
+			this.$xingming_span=$("<span>"+this.xingming+"</span>").appendTo(this.$xingming_td);
+			this.$xingming_input=$("<input type='text' value="+this.xingming+">").appendTo(this.$xingming_td).hide();
+
+			this.$xingbie_td=$("<td></td>").appendTo(this.$tr);
+			this.$xingbie_span=$("<span>"+this.xingbie+"</span>").appendTo(this.$xingbie_td);
+			this.$xingbie_input=$("<input type='text' value="+this.xingbie+">").appendTo(this.$xingbie_td).hide();
+
+			this.$nianling_td=$("<td></td>").appendTo(this.$tr);
+			this.$nianling_span=$("<span>"+this.nianling+"</span>").appendTo(this.$nianling_td);
+			this.$nianling_input=$("<input type='text' value="+this.nianling+">").appendTo(this.$nianling_td).hide();
+			
+			this.$qqhao_td=$("<td></td>").appendTo(this.$tr);
+			this.$qqhao_span=$("<span>"+this.qqhao+"</span>").appendTo(this.$qqhao_td);
+			this.$qqhao_input=$("<input type='text' value="+this.qqhao+">").appendTo(this.$qqhao_td).hide();
+
+			this.$edit_td=$("<td></td>").appendTo(this.$tr);
+			this.$edit_a=$("<a>修改</a>").appendTo(this.$edit_td);
+			this.$edit_aok=$("<a>确定</a>").appendTo(this.$edit_td).hide();
+			this.$delet_td=$("<td></td>").appendTo(this.$tr);
+			this.$delet_a=$("<a>删除</a>").appendTo(this.$delet_td);
+
+			// this.$btn_td=$("<td></td>").appendTo(this.$tr);
+			// this.$btn=$("<input/>").appendTo(this.$btn_td);
+			// this.$btn.attr({
+			// 	"type": 'button',
+			// 	"value": '点我'
+			// });
+		}
+		//student的绑定监听事件
+		Student.prototype.bindEvent=function(){
+			var self=this;
+			this.$edit_a.click(function(){
+				self.$xingming_span.hide();
+				self.$xingming_input.show().focus();
+
+				self.$xingbie_span.hide();
+				self.$xingbie_input.show();
+
+				self.$nianling_span.hide();
+				self.$nianling_input.show();
+
+				self.$qqhao_span.hide();
+				self.$qqhao_input.show();
+				self.$edit_aok.show().css({
+					"background-color": 'green',
+					"color": 'white'
+				});
+				self.$edit_a.hide();
+			});
+
+			this.$edit_aok.click(function(){
+				self.$xingming_span.show();
+				self.$xingming_input.hide();
+
+				self.$xingbie_span.show();
+				self.$xingbie_input.hide();
+
+				self.$nianling_span.show();
+				self.$nianling_input.hide();
+
+				self.$qqhao_span.show();
+				self.$qqhao_input.hide();
+				self.$edit_aok.hide();
+				self.$edit_a.show();
+				//调用更改qqhao的方法
+			    self.edit(self.$xingming_input.val(),self.$xingbie_input.val(),self.$nianling_input.val(),self.$qqhao_input.val());
+			});
+
+			this.$delet_a.click(function(){
+				var cf=confirm("真的要删除"+self.xingming+"同学吗？");
+				if(cf){
+					//调用删除的方法
+					self.deleteStudent(self._id);
+				}		
+			});
+
+
+			// this.$qqhao_td.click(function(){
+			// 	self.$qqhao_span.hide();
+			// 	self.$qqhao_input.show().focus();
+			// });
+			// self.$qqhao_input.blur(function(){
+			// 	self.$qqhao_input.hide();
+			// 	self.$qqhao_span.show();
+			// 	//调用更改qqhao的方法
+			// 	self.changeQQhao(self.$qqhao_input.val());
+			// });
+		}
+
+		//***************修改的方法
+		Student.prototype.edit=function(xingming,xingbie,nianling,qqhao){
+			var self=this;
+			$.post('systerm/edit.php', 
+				{
+					"id": self._id,
+					"xingming":xingming,
+					"xingbie":xingbie,
+					"nianling":nianling,
+					"qqhao":qqhao
+				}, function(data) {				
+				var dataobj=eval("("+data+")");
+				if(dataobj.result==1){
+					self.$gou=$("<img src='images/gou.png'/>").appendTo(self.$edit_td);
+					setTimeout(function(){self.$gou.fadeOut();}, 500);
+					
+					//真的数据
+					self.xingming=xingming;
+					self.$xingming_span.html(xingming);
+					self.xingbie=xingbie;
+					self.$xingbie_span.html(xingbie);
+					self.nianling=nianling;
+					self.$nianling_span.html(nianling);
+					self.qqhao = qqhao;
+					self.$qqhao_span.html(qqhao);
+				}else if(dataobj.result==-1){
+					alert("服务器出错了")
+				}else if(dataobj.result==-2){
+					alert("qq号必须是5——12位数字");
+				}
+			});
+		}
+
+		//***************删除的方法
+		Student.prototype.deleteStudent=function(num){
+			var self=this;
+			$.post('systerm/deleteStudent.php', {"id":num}, function(data) {
+				var dataobj=eval("("+data+")");
+				if(dataobj.result==1){
+					self.$tr.addClass('animated  hinge');
+					setTimeout(function(){
+						self.$tr.remove();
+					},700);
+				}else{
+					alert("服务器错误，木有删除成功");
+				}
+			});
+		}
+
+		//更改qq号的方法
+		// Student.prototype.changeQQhao=function(num){
+		// 	var self=this;
+		// 	$.post('systerm/edit.php', 
+		// 		{
+		// 			"id": self._id,
+		// 			"qqhao":num
+		// 		}, function(data) {				
+		// 		var dataobj=eval("("+data+")");
+		// 		if(dataobj.result==1){
+		// 			self.$gou=$("<img src='images/gou.png'/>").appendTo(self.$qqhao_td);
+		// 			setTimeout(function(){self.$gou.fadeOut();}, 1000);
+					
+		// 			//真的改变qq号
+		// 			self.qqhao = num;
+		// 			self.$qqhao_span.html(num);
+		// 		}else if(dataobj.result==-1){
+		// 			alert("服务器出错了")
+		// 		}else if(dataobj.result==-2){
+		// 			alert("qq号必须是5——12位数字");
+		// 		}
+		// 	});
+		// }
+
+
+		$("#add").click(function(){
+			var tr=$("<tr></tr>").appendTo($("table"));
+			var id_td=$("<td></td>").appendTo(tr);
+			var id_span=$("<span></span>").appendTo(id_td);
+
+			var xingming_td=$("<td></td>").appendTo(tr);
+			var xingming_span=$("<span></span>").appendTo(xingming_td);
+			var xingming_input=$("<input></input>").appendTo(xingming_td);
+
+			var nianling_td=$("<td></td>").appendTo(tr);
+			var nianling_span=$("<span></span>").appendTo(nianling_td);
+			var nianling_input=$("<input></input>").appendTo(nianling_td);
+
+			var xingbie_td=$("<td></td>").appendTo(tr);
+			var xingbie_span=$("<span></span>").appendTo(xingbie_td);
+			var xingbie_input=$("<input></input>").appendTo(xingbie_td);
+
+			var qqhao_td=$("<td></td>").appendTo(tr);
+			var qqhao_span=$("<span></span>").appendTo(qqhao_td);
+			var qqhao_input=$("<input></input>").appendTo(qqhao_td);
+			var addok_a=$("<td><a>确定</a></td>").appendTo(tr);
+			var dele_td=$("<td></td>").appendTo(tr);
+
+			xingming_span.hide();
+			xingbie_span.hide();
+			nianling_span.hide();
+			qqhao_span.hide();
+
+			addok_a.click(function(){
+				$.post('systerm/doadd.php', 
+				{
+					"xingming": xingming_input.val(),
+					"xingbie":xingbie_input.val(),
+					"nianling":nianling_input.val(),
+					"qqhao":qqhao_input.val()
+				}, function(data) {
+					var dataobj=eval("("+data+")");
+					if(dataobj.result==1){
+						location.reload();
+						alert("添加成功");
+					}else{
+						// location.reload();
+						alert("添加失败");
+					}
+				});			
+			});
+		});
+		
+		
+
+
+		//******************
+		//此时应该用一个中介者管理者所有的东西
+		//******************
+		function Management(){
+			this.$dom=$("#studentTable");
+			//此时应该创建一个数组方便实现后来的效果
+			this.studentArr=[];
+		}
+		Management.prototype.getAll=function(){
+			var self=this;
+			$.get('systerm/getAllMessage.php', function(data) {
+				//将从服务器获取来的json数据转换成真正的json数据
+				var $dataobj=eval("("+data+")");
+				//读取json数据的内容
+				for(var i=0;i<$dataobj.result.length;i++){
+					//创建新的学生类
+					var student=new Student($dataobj.result[i]);
+					self.$dom.append(student.$tr);//管理者每管理一次tr就是上一次树
+					//每创建一个student就把他放在管理者的数组中让他管理起来
+					self.studentArr.push(student);
+				}
+			});
+		}
+
+		var m=new Management();
+		m.getAll();
+
+
+
+
+
+
+		// //***********做个小实验
+		// Student.prototype.bindEvent=function(){
+		// 	var self=this;
+		// 	this.$btn.click(function(){
+		// 		alert(self.xingming);
+		// 	});
+		// }
+
+
+		//********************初学者会这样写   但是这样写是很low的  应该使用面向对象的思想
+		// $.get('systerm/getAllMessage.php', function(data) {
+		// 	var dataobj=eval("("+data+")");
+		// 	console.log(dataobj);
+		// 	for(var i=0;i<dataobj.result.length;i++){
+		// 		var $tr=$("<tr></tr>").appendTo($("#studentTable"));
+		// 		$("<td>"+dataobj.result[i]["id"]+"</td>").appendTo($tr);
+		// 		$("<td>"+dataobj.result[i]["xingming"]+"</td>").appendTo($tr);
+		// 	}
+			
+		// });
+	</script>
+</body>
+</html>
